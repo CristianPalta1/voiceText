@@ -13,6 +13,9 @@ export default function Home() {
   const [sampleDescription, setSampleDescription] = useState<string>("");
   const audioRef = useRef<HTMLAudioElement>(null);
 
+  const SUPABASE_EDGE_FUNCTION = process.env.NEXT_PUBLIC_SUPABASE_EDGE_FUNCTION;
+  const SUPABASE_ACCESS_TOKEN = process.env.NEXT_PUBLIC_SUPABASE_ACCESS_TOKEN;
+
   // Mapeo de voces a URLs de muestra y descripciones (usa tus propias URLs)
   const voiceSamples: Record<string, { src: string; description: string }> = {
     Adam: {
@@ -236,11 +239,23 @@ export default function Home() {
     reader.onload = async () => {
       const text = reader.result as string;
       try {
-        const response = await fetch("/api/elevenlabs-api", {
+        console.log(SUPABASE_EDGE_FUNCTION);
+        
+        if (!SUPABASE_EDGE_FUNCTION) {
+          setError("API key is missing.");
+          console.log("API key eleven labsis missing");
+          setLoading(false);
+          return;
+        }
+        const response = await fetch(SUPABASE_EDGE_FUNCTION, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${SUPABASE_ACCESS_TOKEN}`          
+          },
           body: JSON.stringify({ text, voice: selectedVoice }),
         });
+        console.log(response);
         const data = await response.json();
         if (!response.ok) {
           setError(data.error || "Error al generar el audio");

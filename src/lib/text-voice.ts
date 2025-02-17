@@ -1,7 +1,8 @@
 import * as dotenv from "dotenv";
 import { ElevenLabsClient } from "elevenlabs";
 dotenv.config();
-const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+const ELEVENLABS_API_KEY = process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY;
+
 if (!ELEVENLABS_API_KEY) {
   throw new Error("Missing ELEVENLABS_API_KEY in environment variables");
 }
